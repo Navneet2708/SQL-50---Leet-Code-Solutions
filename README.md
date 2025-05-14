@@ -309,6 +309,27 @@ having sum(q2.weight) <= 1000
 order by SUM(q2.weight) DESC
 LIMIT 1;
 ```
+### *Q36: 1907. Count Salary Categories*
+```sql
+SELECT 
+    "Low Salary" as category,
+    COUNT(income) As accounts_count
+from Accounts
+where  income <20000
+UNION
+SELECT 
+    "Average Salary" as category,
+    COUNT(income) As accounts_count
+from Accounts
+where  income >= 20000 AND income <=50000
+UNION
+SELECT 
+    "High Salary" as category,
+    COUNT(income) As accounts_count
+from Accounts
+where  income > 50000
+order by accounts_count DESC
+```
 
 
 
