@@ -330,9 +330,77 @@ from Accounts
 where  income > 50000
 order by accounts_count DESC
 ```
+### *Q37: 1978. Employees Whose Manager Left the Company*
+```sql
+select employee_id
+from employees
+where salary < 30000 AND
+    manager_id NOT IN(
+        Select employee_id
+        from employees
+    )
+    ORDER BY employee_id;
+```
+### *Q38: 626. Exchange Seats*
+```sql
+SELECT 
+    CASE
+        WHEN
+            id = (Select Max(id) FROM seat) AND MOD(id, 2) = 1
+            THEN id
+        WHEN
+            MOD(id, 2) = 1
+            THEN id + 1
+        ELSE
+            id-1
+    END AS id, student
+FROM seat
+ORDER BY id;
+```
+### *Q39: 1341. Movie Rating*
+```sql
+(
+SELECT name as results
+FROM users
+INNER JOIN MovieRating using(user_id)
+GROUP BY user_id
+ORDER BY COUNT(rating) DESC, name
+LIMIT 1
+)
+UNION ALL
 
-
-
+(SELECT title as results
+FROM Movies
+INNER JOIN MovieRating using(movie_id)
+WHERE MONTH(created_at) = '02' AND YEAR(created_at) = '2020'
+GROUP BY title
+ORDER BY AVG(rating) DESC, title
+LIMIT 1
+)
+```
+### *Q40: 1321. Restaurant Growth*
+```sql
+SELECT visited_on,
+        (
+            SELECT SUM(amount)
+            FROM Customer
+            WHERE visited_on BETWEEN DATE_SUB(c.visited_on, INTERVAL 6 DAY)
+            AND c.visited_on
+        ) AS amount,
+        ROUND((
+            SELECT SUM(amount)/7
+            FROM Customer
+            WHERE visited_on BETWEEN DATE_SUB(c.visited_on, INTERVAL 6 DAY)
+            AND c.visited_on
+        ),2) AS average_amount
+FROM Customer c
+WHERE visited_on >= (
+    SELECT DATE_ADD(MIN(visited_on), INTERVAL 6 DAY)
+    FROM Customer
+)
+GROUP BY visited_on
+ORDER BY visited_on
+```
 
 
 
