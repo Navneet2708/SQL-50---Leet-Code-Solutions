@@ -160,18 +160,155 @@ select
 FROM transactions
 GROUP BY month, country;
 ```
+### *Q21: 1174. Immediate Food Delivery II*
+```sql
+SELECT ROUND(sum(if(order_date = customer_pref_delivery_date, 1, 0)) * 100/COUNT(DISTINCT customer_id),2) as immediate_percentage
+from delivery
+WHERE (customer_id, order_date) IN 
+(SELECT customer_id, MIN(order_date) as first_order_date
+from delivery
+group by customer_id 
+)
+```
+### *Q22: 550. Game Play Analysis IV*
+```sql
+select ROUND(COUNT(DISTINCT player_id) / (SELECT COUNT(DISTINCT player_id) from activity),2) as fraction
+from activity
+where (player_id, DATE_SUB(event_date, interval 1 day)) IN
+(
+    select player_id, MIN(event_date) as first_login
+    from activity
+    group by player_id
+)
+```
+### *Q23: 2356. Number of Unique Subjects Taught by Each Teacher*
+```sql
+select teacher_id, count(DISTINCT subject_id) as cnt
+from teacher
+group by teacher_id;
+```
+### *Q24: 1141. User Activity for the Past 30 Days I*
+```sql
+select
+    activity_date as day,
+    COUNT(DISTINCT user_id) as active_users
+from activity
+where activity_date >= '2019-06-28' AND activity_date <= '2019-07-27'
+group by activity_date
+```
+### *Q25: 1070. Product Sales Analysis III*
+```sql
+SELECT product_id, year as first_year, quantity, price
+FROM Sales s
+WHERE (product_id, year) IN(
+    select product_id, MIN(year) as f_year
+    from sales
+    GROUP BY product_id
+);
+```
+### *Q26: 596. Classes More Than 5 Students*
+```sql
+select class
+from courses
+GROUP BY class
+HAVING count(student) >=5; 
+```
+### *Q27: 1729. Find Followers Count*
+```sql
+SELECT user_id, COUNT(DISTINCT follower_id) AS followers_count
+FROM Followers
+GROUP BY user_id
+ORDER BY user_id ASC
+```
+### *Q28: 619. Biggest Single Number*
+```sql
+select MAX(num) as num
+from MyNumbers
+where num IN(
+    select num
+    from MyNumbers
+    group by num
+    having count(*) = 1
+)
+```
+### *Q29: 1045. Customers Who Bought All Products*
+```sql
+select customer_id
+from customer
+group by customer_id
+HAVING COUNT(DISTINCT product_key) = (
+    select COUNT(product_key)
+    from Product
+)
+```
+### *Q30: 1731. The Number of Employees Which Report to Each Employee*
+```sql
+select e1.employee_id, 
+    e1.name, 
+    count(e2.employee_id) as reports_count, 
+    ROUND(AVG(e2.age)) as average_age
+from employees e1
+inner join employees e2
+on e1.employee_id = e2.reports_to
+group by e1.employee_id, e1.name
+order by employee_id
+```
+### *Q31: 1789. Primary Department for Each Employee*
+```sql
+select DISTINCT employee_id, department_id
+from employee
+where employee_id IN (
+    select employee_id
+    from employee
+    group by employee_id
+    having count(*) = 1
+) or primary_flag = 'Y'
+```
+### *Q32: 610. Triangle Judgement*
+```sql
+select *,
+    IF(x+y>z AND y+Z>x AND x+z>y, "Yes", "No") as triangle
+from Triangle
+```
+### *Q33: 180. Consecutive Numbers*
+```sql
+select DISTINCT l1.num as ConsecutiveNums
+from Logs l1, Logs l2, Logs l3
+where l1.id=l2.id-1 AND l2.id=l3.id-1
+AND l1.num= l2.num AND l2.num = l3.num
+```
+### *Q34: 1164. Product Price at a Given Date*
+```sql
+select product_id, new_price as price
+from Products
+where (product_id, change_date) IN (
+    select product_id, max(change_date)
+    from products
+    where change_date <= '2019-08-16'
+    group by product_id
+)
+UNION 
 
-
-
-
-
-
-
-
-
-
-
-
+select product_id, 10 as price
+from products
+where product_id NOT IN
+(
+    select product_id
+    from products
+    where change_date <= '2019-08-16'
+)
+```
+### *Q35: 1204. Last Person to Fit in the Bus*
+```sql
+select q1.person_name
+from queue q1
+inner join Queue q2
+on q1.turn >= q2.turn
+group by q1.turn
+having sum(q2.weight) <= 1000
+order by SUM(q2.weight) DESC
+LIMIT 1;
+```
 
 
 
