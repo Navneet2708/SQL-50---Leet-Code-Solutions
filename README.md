@@ -401,10 +401,103 @@ WHERE visited_on >= (
 GROUP BY visited_on
 ORDER BY visited_on
 ```
+### *Q41: 602. Friend Requests II: Who Has the Most Friends*
+```sql
+select id, count(*) as num
+FROM(
+    select requester_id as id from RequestAccepted
 
+    UNION ALL
 
-
-
-
-
-
+    select accepter_id from RequestAccepted
+) as friend_count
+group by id
+order by num desc
+LIMIT 1
+```
+### *Q42: 585. Investments in 2016*
+```sql
+SELECT ROUND(SUM(tiv_2016),2) as tiv_2016
+FROM Insurance
+WHERE tiv_2015 IN(
+    SELECT tiv_2015
+    FROM Insurance
+    GROUP BY tiv_2015
+    HAVING COUNT(*) > 1
+) AND (lat,lon) IN(
+    SELECT lat, lon
+    FROM Insurance
+    GROUP BY lat, lon
+    HAVING COUNT(*) = 1
+)
+```
+### *Q43: 185. Department Top Three Salaries*
+```sql
+SELECT d.name AS Department,
+e1.name AS Employee,
+e1.salary AS Salary
+FROM employee e1
+INNER JOIN Department d
+ON e1.departmentid = d.id
+WHERE 3 > (
+    SELECT COUNT(DISTINCT (e2.Salary))
+    FROM Employee e2
+    WHERE e2.salary > e1.salary
+    AND e1.Departmentid = e2.departmentid
+)
+```
+### *Q44: 1667. Fix Names in a Table*
+```sql
+select user_id,
+    CONCAT(UPPER(LEFT(name, 1)), LOWER(RIGHT(name, LENGTH(name)-1))) as name
+FROM Users
+OEDER BY user_id
+```
+### *Q45: 1527. Patients With a Condition*
+```sql
+select patient_id, patient_name, conditions
+from Patients
+where conditions LIKE ('DIAB1%') OR conditions LIKE ('% DIAB1%');
+```
+### *Q46: 196. Delete Duplicate Emails*
+```sql
+DELETE p1
+FROM person p1
+INNER JOIN person p2
+ON p1.email = p2.email
+AND p1.id > p2.id;
+```
+### *Q47: 176. Second Highest Salary*
+```sql
+SELECT MAX(salary) as SecondHighestSalary
+from Employee
+WHERE salary < (SELECT MAX(salary) from employee)
+```
+### *Q48: 1484. Group Sold Products By The Date*
+```sql
+SELECT sell_date,
+        COUNT(DISTINCT product) AS num_sold,
+        GROUP_CONCAT(
+            DISTINCT product
+            ORDER BY product
+            SEPARATOR ','
+        ) AS products
+FROM Activities
+GROUP BY sell_date
+ORDER BY sell_date, product
+```
+### *Q49: 1327. List the Products Ordered in a Period*
+```sql
+SELECT product_name, SUM(unit) as unit
+FROM Products
+INNER JOIN Orders USING (product_id)
+WHERE MONTH(order_date) =  2 AND YEAR(order_date) = 2020
+GROUP BY product_name
+HAVING unit >= 100;
+```
+### *Q50: 1517. Find Users With Valid E-Mails*
+```sql
+SELECT *
+FROM users
+WHERE mail REGEXP '^[A-Za-z][A-Za-z0-9_\.\-]*@leetcode[.]com$'
+```
